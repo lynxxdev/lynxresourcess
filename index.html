@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Lynx Resources</title>
+<style>
+body {
+  background: #0d0d0f;
+  color: white;
+  font-family: Arial;
+  text-align: center;
+}
+.box {
+  margin-top: 60px;
+  background: #1a1a1d;
+  padding: 30px;
+  border-radius: 15px;
+  width: 90%;
+  margin-left: auto;
+  margin-right: auto;
+}
+input, textarea {
+  width: 90%;
+  padding: 10px;
+  margin: 10px;
+  border-radius: 10px;
+  border: none;
+}
+button {
+  background: #6e00ff;
+  border: none;
+  padding: 12px 20px;
+  color: white;
+  border-radius: 10px;
+  margin-top: 10px;
+  width: 60%;
+}
+</style>
+</head>
+
+<body>
+<h1>Lynx Resources</h1>
+
+<div class="box">
+<h2>Enviar script .lua</h2>
+
+<input id="filename" placeholder="ex: script.lua">
+<textarea id="content" rows="10" placeholder="Cole seu script aqui"></textarea>
+<button onclick="upload()">Enviar</button>
+
+<p id="result"></p>
+</div>
+
+<script>
+async function upload() {
+    const filename = document.getElementById("filename").value;
+    const content = document.getElementById("content").value;
+
+    const res = await fetch("/upload", {
+        method: "POST",
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({ filename, content })
+    });
+
+    const data = await res.json();
+    document.getElementById("result").innerText = data.loadstring || "Erro!";
+}
+</script>
+
+</body>
+</html>

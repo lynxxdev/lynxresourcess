@@ -1,10 +1,17 @@
 import { kv } from "@vercel/kv";
 
 export default async function handler(req, res) {
-    const filename = req.query.file;
-    if (!filename) return res.status(400).send("Missing file.");
-
-    const execs = await kv.get(`exec_${filename}`) || 0;
-
-    return res.json({ file: filename, executions: execs });
+    try {
+        // Lista todos os arquivos armazenados
+        const keys = await kv.keys("file_*");
+        const files = [];
+        for (const key of keys) {
+            const filename = key.replace("file_", "");
+            const execs = await kv.get(`exec_${filename}`) || 0;
+            files.push({ filename, executions: execs });
+        }
+        return res.json(files);
+    } catch (e) {
+        return res.status(500).send("Erro interno.");
+    }
 }

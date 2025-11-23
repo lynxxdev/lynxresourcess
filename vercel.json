@@ -1,0 +1,9 @@
+{
+  "version": 2,
+  "routes": [
+    { "src": "/raw/(.*)", "dest": "/api/raw.js" },
+    { "src": "/upload", "dest": "/api/upload.js" },
+    { "src": "/stats", "dest": "/api/stats.js" },
+    { "src": "/replace", "dest": "/api/replace.js" }
+  ]
+}

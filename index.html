@@ -44,8 +44,7 @@ button {
 <div class="box">
 <h2>Enviar script .lua</h2>
 
-<input id="filename" placeholder="ex: script.lua">
-<textarea id="content" rows="10" placeholder="Cole seu script aqui"></textarea>
+<input type="file" id="fileInput" accept=".lua">
 <button onclick="upload()">Enviar</button>
 
 <p id="result"></p>
@@ -53,17 +52,26 @@ button {
 
 <script>
 async function upload() {
-    const filename = document.getElementById("filename").value;
-    const content = document.getElementById("content").value;
+    const fileInput = document.getElementById("fileInput");
+    if (!fileInput.files.length) return alert("Selecione um arquivo!");
 
-    const res = await fetch("/upload", {
-        method: "POST",
-        headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify({ filename, content })
-    });
+    const file = fileInput.files[0];
+    const content = await file.text();
+    const filename = file.name;
 
-    const data = await res.json();
-    document.getElementById("result").innerText = data.loadstring || "Erro!";
+    try {
+        const res = await fetch("/upload", {
+            method: "POST",
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({ filename, content })
+        });
+
+        const data = await res.json();
+        document.getElementById("result").innerText = data.loadstring || "Erro ao enviar!";
+    } catch (err) {
+        document.getElementById("result").innerText = "Erro de conexão!";
+        console.error(err);
+    }
 }
 </script>
 

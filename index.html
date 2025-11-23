@@ -60,7 +60,7 @@ async function upload() {
     const filename = file.name;
 
     try {
-        const res = await fetch("/upload", {
+        const res = await fetch("/api/upload", {  // CORRIGIDO: apontando para /api/upload
             method: "POST",
             headers: {'Content-Type': 'application/json'},
             body: JSON.stringify({ filename, content })

@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>ChatGPT Bot</title>
+<style>
+body { font-family: Arial; background:#1e1e1e; color:#fff; display:flex; justify-content:center; align-items:center; height:100vh; margin:0; }
+#chatContainer { width:90%; max-width:400px; background:#2c2c2c; border-radius:10px; display:flex; flex-direction:column; overflow:hidden; }
+#messages { flex:1; padding:10px; overflow-y:auto; }
+.message { margin:5px 0; padding:8px 12px; border-radius:8px; max-width:80%; word-wrap:break-word; }
+.userMessage { background:#007bff; align-self:flex-end; }
+.botMessage { background:#555; align-self:flex-start; }
+#inputContainer { display:flex; border-top:1px solid #444; }
+#userInput { flex:1; padding:10px; border:none; outline:none; background:#1e1e1e; color:#fff; }
+#sendBtn { padding:0 15px; border:none; background:#007bff; color:#fff; cursor:pointer; }
+#sendBtn:hover { background:#0056b3; }
+</style>
+</head>
+<body>
+
+<div id="chatContainer">
+    <div id="messages"></div>
+    <div id="inputContainer">
+        <input id="userInput" type="text" placeholder="Digite sua mensagem...">
+        <button id="sendBtn">Enviar</button>
+    </div>
+</div>
+
+<script>
+const messagesDiv = document.getElementById('messages');
+const input = document.getElementById('userInput');
+const sendBtn = document.getElementById('sendBtn');
+
+function addMessage(text,className){
+    const div = document.createElement('div');
+    div.textContent = text;
+    div.className = `message ${className}`;
+    messagesDiv.appendChild(div);
+    messagesDiv.scrollTop = messagesDiv.scrollHeight;
+}
+
+async function botResponse(userText){
+    addMessage("Você: " + userText, "userMessage");
+
+    const responseDiv = document.createElement('div');
+    responseDiv.textContent = "Bot: ...";
+    responseDiv.className = "message botMessage";
+    messagesDiv.appendChild(responseDiv);
+    messagesDiv.scrollTop = messagesDiv.scrollHeight;
+
+    try {
+        const res = await fetch("/api/chat", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                model: "gpt-3.5-turbo",
+                messages: [{ role: "user", content: userText }],
+                temperature: 0.7
+            })
+        });
+        const data = await res.json();
+        const botText = data.choices[0].message.content;
+        responseDiv.textContent = "Bot: " + botText;
+        messagesDiv.scrollTop = messagesDiv.scrollHeight;
+    } catch (e) {
+        responseDiv.textContent = "Bot: Erro ao conectar à API.";
+    }
+}
+
+function sendMessage(){
+    const userText = input.value.trim();
+    if(userText==="") return;
+    botResponse(userText);
+    input.value="";
+    input.focus();
+}
+
+sendBtn.addEventListener("click",sendMessage);
+input.addEventListener("keypress",e=>{if(e.key==="Enter") sendMessage();});
+</script>
+
+</body>
+</html>

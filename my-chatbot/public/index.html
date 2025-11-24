@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
-<title>ChatGPT Bot</title>
+<title>ChatGPT-BOT com Chave</title>
 <style>
 body { font-family: Arial; background:#1e1e1e; color:#fff; display:flex; justify-content:center; align-items:center; height:100vh; margin:0; }
 #chatContainer { width:90%; max-width:400px; background:#2c2c2c; border-radius:10px; display:flex; flex-direction:column; overflow:hidden; }
@@ -31,6 +31,9 @@ const messagesDiv = document.getElementById('messages');
 const input = document.getElementById('userInput');
 const sendBtn = document.getElementById('sendBtn');
 
+// Coloque sua chave da OpenAI aqui
+const OPENAI_KEY = "sk-SEU-CÓDIGO-AQUI";
+
 function addMessage(text,className){
     const div = document.createElement('div');
     div.textContent = text;
@@ -49,9 +52,12 @@ async function botResponse(userText){
     messagesDiv.scrollTop = messagesDiv.scrollHeight;
 
     try {
-        const res = await fetch("/api/chat", {
+        const res = await fetch("https://api.openai.com/v1/chat/completions", {
             method: "POST",
-            headers: { "Content-Type": "application/json" },
+            headers: {
+                "Authorization": `Bearer ${OPENAI_KEY}`,
+                "Content-Type": "application/json"
+            },
             body: JSON.stringify({
                 model: "gpt-3.5-turbo",
                 messages: [{ role: "user", content: userText }],
